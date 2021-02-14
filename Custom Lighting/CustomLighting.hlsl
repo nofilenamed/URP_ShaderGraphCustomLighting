@@ -57,8 +57,12 @@ void MainLightShadows_float (float3 WorldPos, out float ShadowAtten){
 	#else
 		float4 shadowCoord = TransformWorldToShadowCoord(WorldPos);
 		
-		ShadowAtten = MainLightRealtimeShadow(shadowCoord);
-
+		#if VERSION_GREATER_EQUAL(10, 1)
+			ShadowAtten = MainLightShadow(shadowCoord, WorldPos, half4(1,1,1,1), _MainLightOcclusionProbes);
+		#else
+			ShadowAtten = MainLightRealtimeShadow(shadowCoord);
+		#endif
+		
 		/*
 		- Used to use this, but while it works in editor it doesn't work in builds. :(
 		- Bypasses need for _MAIN_LIGHT_SHADOWS (/MAIN_LIGHT_CALCULATE_SHADOWS), so won't error in an Unlit Graph even at no/1 cascades.
